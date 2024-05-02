@@ -3,7 +3,9 @@ using AutoMapper.QueryableExtensions;
 using Howest.MagicCards.DAL.Models;
 using Howest.MagicCards.DAL.Repositories;
 using Howest.MagicCards.Shared.DTO;
+using Howest.MagicCards.Shared.Filters;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Wrappers;
 
 namespace WebAPI.Controllers
 {
@@ -20,10 +22,17 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CardDTO>> GetCards()
+        public ActionResult<PagedResponse<IEnumerable<CardDTO>>> GetCards([FromQuery] PaginationFilter paginationFilter)
         {
-            return Ok(_cardRepo.GetAllCards().
-                ProjectTo<CardDTO>(_mapper.ConfigurationProvider));
+            return Ok(new PagedResponse<IEnumerable<CardDTO>>(
+                _cardRepo.GetAllCards()
+                .Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                .Take(paginationFilter.PageSize)
+                .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
+                .ToList(),
+             paginationFilter.PageNumber,
+             paginationFilter.PageSize)
+          );
         }
 
         [HttpGet("{id:int}")]

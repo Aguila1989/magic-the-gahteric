@@ -1,4 +1,5 @@
-﻿using Howest.MagicCards.DAL.Models;
+﻿using Howest.MagicCards.DAL.DBContext;
+using Howest.MagicCards.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,16 +11,16 @@ namespace Howest.MagicCards.DAL.Repositories
 {
     public class SQLCardRepository : ICardRepository
     {
-        private readonly MtgV1Context _db;
+        private readonly CardsContext _db;
 
         public SQLCardRepository()
         {
-            _db = new MtgV1Context();
+            _db = new CardsContext();
         }
         public IQueryable<Card> GetAllCards()
         {
-            IQueryable<Card> allCards = _db.Cards.Take(100);
-                                                //.Select(c => c);
+            IQueryable<Card> allCards = _db.Cards
+                                                .Select(c => c);
             return allCards;
         }
 
