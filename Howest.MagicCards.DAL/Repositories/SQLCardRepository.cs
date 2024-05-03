@@ -17,19 +17,19 @@ namespace Howest.MagicCards.DAL.Repositories
         {
             _db = new CardsContext();
         }
+
         public IQueryable<Card> GetAllCards()
         {
-            IQueryable<Card> allCards = _db.Cards
-                                                .Select(c => c);
-            return allCards;
+            return _db.Cards
+                  .Select(c => c);
+            
         }
 
         public Card GetCardbyId(int id)
         {
-            Card oneCard = _db.Cards
-                                .SingleOrDefault(c => c.Id == id);
+            return _db.Cards
+                  .SingleOrDefault(c => c.Id == id);
 
-            return oneCard;
         }
     }
 

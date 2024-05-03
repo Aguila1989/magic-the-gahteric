@@ -17,14 +17,12 @@ namespace Howest.MagicCards.DAL.Repositories
 
         public Artist GetArtistById(long id)
         {
-            Artist artists = _db.Artists.Where(a => a.Id == id).FirstOrDefault();
-            return artists;
+            return _db.Artists.Where(a => a.Id == id).FirstOrDefault();
         }
 
         public IQueryable<Artist> GetArtists()
         {
-            IQueryable<Artist> artists = _db.Artists.Include(a => a.Cards).Select(a => a);
-            return artists;
+            return _db.Artists.Include(a => a.Cards).Select(a => a);
         }
     }
 }
