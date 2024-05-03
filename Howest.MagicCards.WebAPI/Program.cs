@@ -10,6 +10,7 @@ builder.Services.AddAutoMapper(new Type[] { typeof(Howest.MagicCards.Shared.Mapp
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICardRepository, SQLCardRepository>();
+builder.Services.AddScoped<IArtistRepository, SqlArtistRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
