@@ -22,16 +22,16 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<PagedResponse<IEnumerable<CardDTO>>> GetCards([FromQuery] PaginationFilter paginationFilter)
+        public ActionResult<PagedResponse<IEnumerable<CardDTO>>> GetCards([FromQuery] CardFilter filter)
         {
             return Ok(new PagedResponse<IEnumerable<CardDTO>>(
                 _cardRepo.GetAllCards()
-                .Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
-                .Take(paginationFilter.PageSize)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
                 .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
                 .ToList(),
-             paginationFilter.PageNumber,
-             paginationFilter.PageSize)
+             filter.PageNumber,
+             filter.PageSize)
           );
         }
 
