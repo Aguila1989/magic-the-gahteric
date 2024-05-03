@@ -13,11 +13,7 @@ namespace Howest.MagicCards.Shared.Filters
         public string SetCode { get; set; }  
         public Artist Artist { get; set; } 
         public string RarityCode { get; set; }
-        public string Type
-        {
-            get => _type;
-            set => _type = value?.Split('-').FirstOrDefault()?.Trim();
-        }
+        public string Type { get; set; }
         public string Name { get; set; } 
         public string Text { get; set; } 
     }

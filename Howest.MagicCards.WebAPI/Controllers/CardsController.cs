@@ -38,15 +38,9 @@ namespace WebAPI.Controllers
         [HttpGet("{id:int}")]
         public ActionResult<CardDetailDTO> GetCard(int id)
         {
-            var card = _cardRepo.GetCardbyId(id);
-            if (card == null)
-            {
-                return NotFound(); 
-            }
-
-            var cardDetailDTO = _mapper.Map<CardDetailDTO>(card); 
-
-            return Ok(cardDetailDTO);
+            return (_cardRepo.GetCardbyId(id) is Card card)
+                ? Ok(_mapper.Map<CardDetailDTO>(card))
+                : NotFound(new Response<String>() { Message = "No card was found" });
         }
 
 
