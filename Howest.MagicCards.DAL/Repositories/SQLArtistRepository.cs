@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Howest.MagicCards.DAL.Repositories
 {
-    public class SqlArtistRepository : IArtistRepository
+    public class SQLArtistRepository : IArtistRepository
     {
         private readonly CardsContext _db;
 
-        public SqlArtistRepository(CardsContext con)
+        public SQLArtistRepository(CardsContext db)
         {
-            _db = con;
+            _db = db;
         }
 
 
