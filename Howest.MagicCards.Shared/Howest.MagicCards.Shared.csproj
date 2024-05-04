@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Howest.MagicCards.DAL\Howest.MagicCards.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Validation\" />
+  </ItemGroup>
+
 </Project>

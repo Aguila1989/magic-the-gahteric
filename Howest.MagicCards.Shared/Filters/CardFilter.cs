@@ -9,7 +9,6 @@ namespace Howest.MagicCards.Shared.Filters
 {
     public class CardFilter: PaginationFilter
     {
-        private string _type;
         public string SetCode { get; set; }  
         public Artist Artist { get; set; } 
         public string RarityCode { get; set; }
