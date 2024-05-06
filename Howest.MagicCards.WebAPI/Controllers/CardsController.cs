@@ -8,6 +8,7 @@ using Howest.MagicCards.Shared.Extensions;
 using Howest.MagicCards.Shared.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Shared.Extensions;
 using WebAPI.Wrappers;
 
@@ -21,104 +22,160 @@ namespace WebAPI.Controllers.V1_1
     {
         private readonly ICardRepository _cardRepo;
         private readonly IMapper _mapper;
-        public CardsController(IMapper mapper, ICardRepository repo)
+        private readonly IMemoryCache _cache;
+        public CardsController(IMapper mapper, ICardRepository repo, IMemoryCache cache)
         {
             _cardRepo = repo;
             _mapper = mapper;
+            _cache = cache;
         }
 
         [HttpGet]
         public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilter filter)
         {
             IQueryable<Card> cards = _cardRepo.GetAllCards();
+
             if (cards == null)
             {
                 return BadRequest(new Response<CardDTO>()
                 {
                     Succeeded = false,
                     Errors = ["400"],
-                    Message = "No cards where found."
+                    Message = "No cards were found."
                 });
             }
-            return Ok(new PagedResponse<IEnumerable<CardDTO>>(
-                await cards
-                .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
-                .ToPagedList(filter.PageNumber, filter.PageSize)
-                .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
-                .ToListAsync(),
-             filter.PageNumber,
-             filter.PageSize)
+
+            string cacheKey = $"Cards_{filter.PageNumber}_{filter.PageSize}_{filter.SetCode}_{filter.Type}_{filter.Name}_{filter.Text}_{filter.Artist}_{filter.RarityCode}";
+
+            if (!_cache.TryGetValue(cacheKey, out IEnumerable<CardDTO> cachedResult))
             {
-                TotalRecords = cards.ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
-                                    .Count(),
-                TotalPages = (int)Math.Ceiling(cards.ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
-                                    .Count()/ (double)filter.PageSize)
+                cachedResult = await cards
+                    .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                    .ToPagedList(filter.PageNumber, filter.PageSize)
+                    .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
+
+                MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60)
+                };
+
+                _cache.Set(cacheKey, cachedResult, cacheOptions);
             }
-          );
+
+            int totalRecords = cards
+                .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                .Count();
+
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)filter.PageSize);
+
+            return Ok(new PagedResponse<IEnumerable<CardDTO>>(cachedResult, filter.PageNumber, filter.PageSize)
+            {
+                TotalRecords = totalRecords,
+                TotalPages = totalPages
+            });
         }
     }
-}
 
-namespace WebAPI.Controllers.V1_5
-{
-    [ApiVersion("1.5")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
-    public class CardsController : ControllerBase
+    namespace WebAPI.Controllers.V1_5
     {
-        private readonly ICardRepository _cardRepo;
-        private readonly IMapper _mapper;
-        public CardsController(IMapper mapper, ICardRepository repo)
+        [ApiVersion("1.5")]
+        [Route("api/v{version:apiVersion}/[controller]")]
+        [ApiController]
+        public class CardsController : ControllerBase
         {
-            _cardRepo = repo;
-            _mapper = mapper;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilterWithSorting filter)
-        {
-            IQueryable<Card> cards = _cardRepo.GetAllCards();
-            if (cards == null)
+            private readonly ICardRepository _cardRepo;
+            private readonly IMapper _mapper;
+            private readonly IMemoryCache _cache;
+            public CardsController(IMapper mapper, ICardRepository repo, IMemoryCache cache)
             {
-                return BadRequest(new Response<CardDTO>()
+                _cardRepo = repo;
+                _mapper = mapper;
+                _cache = cache;
+            }
+
+            [HttpGet]
+            public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilterWithSorting filter)
+            {
+                IQueryable<Card> cards = _cardRepo.GetAllCards();
+
+                if (cards == null)
                 {
-                    Succeeded = false,
-                    Errors = ["400"],
-                    Message = "No cards where found."
+                    return BadRequest(new Response<CardDTO>()
+                    {
+                        Succeeded = false,
+                        Errors = ["400"],
+                        Message = "No cards were found."
+                    });
+                }
+
+                string cacheKey = $"Cards_{filter.PageNumber}_{filter.PageSize}_{filter.SetCode}_{filter.Type}_{filter.Name}_{filter.Text}_{filter.Artist}_{filter.RarityCode}_{filter.SortAsc}";
+
+                if (!_cache.TryGetValue(cacheKey, out IEnumerable<CardDTO> cachedResult))
+                {
+                    cachedResult = await cards
+                        .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                        .Sort(filter.SortAsc)
+                        .ToPagedList(filter.PageNumber, filter.PageSize)
+                        .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
+                        .ToListAsync();
+
+                    MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60)
+                    };
+
+                    _cache.Set(cacheKey, cachedResult, cacheOptions);
+                }
+
+                int totalRecords = cards
+                    .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                    .Count();
+
+                int totalPages = (int)Math.Ceiling(totalRecords / (double)filter.PageSize);
+
+                return Ok(new PagedResponse<IEnumerable<CardDTO>>(cachedResult, filter.PageNumber, filter.PageSize)
+                {
+                    TotalRecords = totalRecords,
+                    TotalPages = totalPages
                 });
             }
-            return Ok(new PagedResponse<IEnumerable<CardDTO>>(
-               await cards
-                .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
-                .Sort(filter.SortAsc)
-                .ToPagedList(filter.PageNumber, filter.PageSize)
-                .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
-                .ToListAsync(),
-             filter.PageNumber,
-             filter.PageSize)
+
+
+            [HttpGet("{id:int}")]
+            public async Task<ActionResult<CardDetailDTO>> GetCard(int id)
             {
-                TotalRecords = cards.ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
-                                    .Count(),
-                TotalPages = (int)Math.Ceiling(cards.ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
-                                    .Count() / (double)filter.PageSize)
-            }
-          );
-        }
+                string cacheKey = $"Card_{id}";
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<CardDetailDTO>> GetCard(int id)
-        {
-            return (await _cardRepo.GetCardbyId(id) is Card card)
-                ? Ok(_mapper.Map<CardDetailDTO>(card))
-                : NotFound(new Response<CardDetailDTO>()
+                if (!_cache.TryGetValue(cacheKey, out CardDetailDTO cachedResult))
                 {
-                    Succeeded = false,
-                    Errors = new string[] { "404" },
-                    Message = $"No card found with id {id}"
+                    var card = await _cardRepo.GetCardbyId(id);
+
+                    if (card != null)
+                    {
+                        cachedResult = _mapper.Map<CardDetailDTO>(card);
+                        MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60)
+                        };
+                        _cache.Set(cacheKey, cachedResult, cacheOptions);
+                    }
+                    else
+                    {
+                        return NotFound(new Response<CardDetailDTO>()
+                        {
+                            Succeeded = false,
+                            Errors = new string[] { "404" },
+                            Message = $"No card found with id {id}"
+                        });
+                    }
                 }
-                    );
+
+                return Ok(cachedResult);
+            }
+
+
+
         }
-
-
     }
 }

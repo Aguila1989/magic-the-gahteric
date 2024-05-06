@@ -13,6 +13,7 @@ ConfigurationManager config = builder.Configuration;
 builder.Services.AddDbContext<MTGContext>
     (options => options.UseSqlServer(config.GetConnectionString("MagicTheGatheringDb")));
 builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
 builder.Services.AddAutoMapper(new Type[] { typeof(CardProfile), typeof(ArtistProfile) });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
