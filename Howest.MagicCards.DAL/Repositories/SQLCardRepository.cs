@@ -1,13 +1,14 @@
 ﻿using Howest.MagicCards.DAL.DBContext;
 using Howest.MagicCards.DAL.Models;
+using Microsoft.Identity.Client;
 
 namespace Howest.MagicCards.DAL.Repositories
 {
     public class SQLCardRepository : ICardRepository
     {
-        private readonly CardsContext _db;
+        private readonly MTGContext _db;
 
-        public SQLCardRepository(CardsContext db)
+        public SQLCardRepository(MTGContext db)
         {
             _db = db;
         }
@@ -23,8 +24,10 @@ namespace Howest.MagicCards.DAL.Repositories
         {
             return _db.Cards
                   .SingleOrDefault(c => c.Id == id);
-
         }
+
+        
+
     }
 
 }

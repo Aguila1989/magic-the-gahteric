@@ -8,7 +8,7 @@ ConfigurationManager config = builder.Configuration;
 
 // Add services to the container.
 
-builder.Services.AddDbContext<CardsContext>
+builder.Services.AddDbContext<MTGContext>
     (options => options.UseSqlServer(config.GetConnectionString("MagicTheGatheringDb")));
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(new Type[] { typeof(CardProfile), typeof(ArtistProfile) });
@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICardRepository, SQLCardRepository>();
 builder.Services.AddScoped<IArtistRepository, SQLArtistRepository>();
+builder.Services.AddScoped<ITypeRepository, SQLTypeRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

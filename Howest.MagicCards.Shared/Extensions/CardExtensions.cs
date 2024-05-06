@@ -8,12 +8,12 @@ namespace Howest.MagicCards.Shared.Extensions
         {
             IQueryable<Card> res = cards;
 
-            res = res.Where(c => set == null ? true : c.SetCode == set);
-            res = res.Where(c => type == null ? true : c.Type.Substring(0, c.Type.IndexOf('-')).Contains(type));
-            res = res.Where(c => name == null ? true : c.Name.Contains(name));
-            res = res.Where(c => text == null ? true : c.Text.Contains(text));
-            res = res.Where(c => artist == null ? true : c.Artist == artist);
-            res = res.Where(c => rarity == null ? true : c.RarityCode == rarity);
+            res = res.Where(c => set == null || c.SetCode == set);
+            res = res.Where(c => type == null || c.Type.Contains(type));
+            res = res.Where(c => name == null || c.Name.Contains(name));
+            res = res.Where(c => text == null || c.Text.Contains(text));
+            res = res.Where(c => artist == null || c.Artist == artist);
+            res = res.Where(c => rarity == null || c.RarityCode == rarity);
 
             return res;
         }
