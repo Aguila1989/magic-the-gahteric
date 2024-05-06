@@ -18,5 +18,10 @@ namespace Howest.MagicCards.Shared.Extensions
             return res;
         }
 
+        public static IQueryable<Card> Sort(this IQueryable<Card> cards, bool orderbyNameAsc)
+        {
+            return orderbyNameAsc ? cards.OrderBy(c => c.Name) : (IQueryable<Card>)cards.OrderByDescending(c => c.Name);
+        }
+
     }
 }

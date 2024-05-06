@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Howest.MagicCards.DAL.Models;
 using Howest.MagicCards.DAL.Repositories;
@@ -9,9 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Extensions;
 using WebAPI.Wrappers;
 
-namespace WebAPI.Controllers
+
+namespace WebAPI.Controllers.V1_1
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.1")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class CardsController : ControllerBase
     {
@@ -39,6 +42,7 @@ namespace WebAPI.Controllers
             return Ok(new PagedResponse<IEnumerable<CardDTO>>(
                 cards
                 .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                .Sort(filter.OrderByNameAsc)
                 .ToPagedList(filter.PageNumber, filter.PageSize)
                 .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
                 .ToList(),
