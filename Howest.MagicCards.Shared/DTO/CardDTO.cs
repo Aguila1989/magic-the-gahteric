@@ -1,5 +1,4 @@
-﻿
-namespace Howest.MagicCards.Shared.DTO
+﻿namespace Howest.MagicCards.Shared.DTO
 {
     public record CardDTO
     {

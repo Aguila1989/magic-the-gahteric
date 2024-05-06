@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Howest.MagicCards.DAL.Models;
+﻿using Howest.MagicCards.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Howest.MagicCards.DAL.DBContext;
