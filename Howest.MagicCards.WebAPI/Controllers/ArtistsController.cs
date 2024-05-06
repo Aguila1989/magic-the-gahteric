@@ -4,6 +4,7 @@ using Howest.MagicCards.DAL.Models;
 using Howest.MagicCards.DAL.Repositories;
 using Howest.MagicCards.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Wrappers;
 
 namespace HWebAPI.Controllers
 {
@@ -25,7 +26,12 @@ namespace HWebAPI.Controllers
         {
             return (_artistRepo.GetArtists() is IQueryable<Artist> allArtists)
                 ? Ok(allArtists.ProjectTo<ArtistDTO>(_mapper.ConfigurationProvider))
-                : NotFound();
+                : NotFound(new Response<ArtistDTO>()
+                    {
+                        Succeeded = false,
+                        Errors = new string[] { "404" },
+                        Message = $"No artists where found"
+                    });
         }
     }
 }
