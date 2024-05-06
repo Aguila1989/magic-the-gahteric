@@ -16,7 +16,6 @@ builder.Services.AddControllers();
 builder.Services.AddAutoMapper(new Type[] { typeof(CardProfile), typeof(ArtistProfile) });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICardRepository, SQLCardRepository>();
 builder.Services.AddScoped<IArtistRepository, SQLArtistRepository>();
 builder.Services.AddScoped<ITypeRepository, SQLTypeRepository>();
@@ -57,7 +56,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1.1/swagger.json", "v1.1");
+        c.SwaggerEndpoint("/swagger/v1.5/swagger.json", "v1.5");
+    });
 }
 
 app.UseHttpsRedirection();

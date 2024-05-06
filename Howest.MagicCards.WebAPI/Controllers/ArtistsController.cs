@@ -4,6 +4,7 @@ using Howest.MagicCards.DAL.Models;
 using Howest.MagicCards.DAL.Repositories;
 using Howest.MagicCards.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Wrappers;
 
 namespace HWebAPI.Controllers
@@ -22,10 +23,10 @@ namespace HWebAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IQueryable<ArtistDTO>> GetArtists([FromServices] IConfiguration config)
+        public async Task<ActionResult<IEnumerable<ArtistDTO>>> GetArtists([FromServices] IConfiguration config)
         {
             return (_artistRepo.GetArtists() is IQueryable<Artist> allArtists)
-                ? Ok(allArtists.ProjectTo<ArtistDTO>(_mapper.ConfigurationProvider))
+                ? Ok(await allArtists.ProjectTo<ArtistDTO>(_mapper.ConfigurationProvider).ToListAsync())
                 : NotFound(new Response<ArtistDTO>()
                     {
                         Succeeded = false,

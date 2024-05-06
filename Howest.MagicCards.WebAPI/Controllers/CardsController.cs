@@ -7,6 +7,7 @@ using Howest.MagicCards.Shared.DTO;
 using Howest.MagicCards.Shared.Extensions;
 using Howest.MagicCards.Shared.Filters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shared.Extensions;
 using WebAPI.Wrappers;
 
@@ -27,7 +28,7 @@ namespace WebAPI.Controllers.V1_1
         }
 
         [HttpGet]
-        public ActionResult<PagedResponse<IEnumerable<CardDTO>>> GetCards([FromQuery] CardFilter filter)
+        public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilter filter)
         {
             IQueryable<Card> cards = _cardRepo.GetAllCards();
             if (cards == null)
@@ -40,11 +41,11 @@ namespace WebAPI.Controllers.V1_1
                 });
             }
             return Ok(new PagedResponse<IEnumerable<CardDTO>>(
-                cards
+                await cards
                 .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
                 .ToPagedList(filter.PageNumber, filter.PageSize)
                 .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
-                .ToList(),
+                .ToListAsync(),
              filter.PageNumber,
              filter.PageSize)
             {
@@ -74,7 +75,7 @@ namespace WebAPI.Controllers.V1_5
         }
 
         [HttpGet]
-        public ActionResult<PagedResponse<IEnumerable<CardDTO>>> GetCards([FromQuery] CardFilterWithSorting filter)
+        public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilterWithSorting filter)
         {
             IQueryable<Card> cards = _cardRepo.GetAllCards();
             if (cards == null)
@@ -87,12 +88,12 @@ namespace WebAPI.Controllers.V1_5
                 });
             }
             return Ok(new PagedResponse<IEnumerable<CardDTO>>(
-                cards
+               await cards
                 .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
                 .Sort(filter.SortAsc)
                 .ToPagedList(filter.PageNumber, filter.PageSize)
                 .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
-                .ToList(),
+                .ToListAsync(),
              filter.PageNumber,
              filter.PageSize)
             {
@@ -105,9 +106,9 @@ namespace WebAPI.Controllers.V1_5
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<CardDetailDTO> GetCard(int id)
+        public async Task<ActionResult<CardDetailDTO>> GetCard(int id)
         {
-            return (_cardRepo.GetCardbyId(id) is Card card)
+            return (await _cardRepo.GetCardbyId(id) is Card card)
                 ? Ok(_mapper.Map<CardDetailDTO>(card))
                 : NotFound(new Response<CardDetailDTO>()
                 {

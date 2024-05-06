@@ -1,6 +1,6 @@
 ﻿using Howest.MagicCards.DAL.DBContext;
 using Howest.MagicCards.DAL.Models;
-using Microsoft.Identity.Client;
+using Microsoft.EntityFrameworkCore;
 
 namespace Howest.MagicCards.DAL.Repositories
 {
@@ -15,19 +15,13 @@ namespace Howest.MagicCards.DAL.Repositories
 
         public IQueryable<Card> GetAllCards()
         {
-            return _db.Cards
-                  .Select(c => c);
-            
+            return _db.Cards.Select(c => c);
         }
 
-        public Card GetCardbyId(int id)
+        public async Task<Card> GetCardbyId(int id)
         {
-            return _db.Cards
-                  .SingleOrDefault(c => c.Id == id);
+            return await _db.Cards.SingleOrDefaultAsync(c => c.Id == id);
         }
-
-        
-
     }
 
 }
