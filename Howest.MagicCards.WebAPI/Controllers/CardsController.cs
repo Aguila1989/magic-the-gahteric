@@ -42,7 +42,6 @@ namespace WebAPI.Controllers.V1_1
             return Ok(new PagedResponse<IEnumerable<CardDTO>>(
                 cards
                 .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
-                .Sort(filter.OrderByNameAsc)
                 .ToPagedList(filter.PageNumber, filter.PageSize)
                 .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
                 .ToList(),
@@ -53,6 +52,54 @@ namespace WebAPI.Controllers.V1_1
                                     .Count(),
                 TotalPages = (int)Math.Ceiling(cards.ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
                                     .Count()/ (double)filter.PageSize)
+            }
+          );
+        }
+    }
+}
+
+namespace WebAPI.Controllers.V1_5
+{
+    [ApiVersion("1.5")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiController]
+    public class CardsController : ControllerBase
+    {
+        private readonly ICardRepository _cardRepo;
+        private readonly IMapper _mapper;
+        public CardsController(IMapper mapper, ICardRepository repo)
+        {
+            _cardRepo = repo;
+            _mapper = mapper;
+        }
+
+        [HttpGet]
+        public ActionResult<PagedResponse<IEnumerable<CardDTO>>> GetCards([FromQuery] CardFilterWithSorting filter)
+        {
+            IQueryable<Card> cards = _cardRepo.GetAllCards();
+            if (cards == null)
+            {
+                return BadRequest(new Response<CardDTO>()
+                {
+                    Succeeded = false,
+                    Errors = ["400"],
+                    Message = "No cards where found."
+                });
+            }
+            return Ok(new PagedResponse<IEnumerable<CardDTO>>(
+                cards
+                .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                .Sort(filter.SortAsc)
+                .ToPagedList(filter.PageNumber, filter.PageSize)
+                .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
+                .ToList(),
+             filter.PageNumber,
+             filter.PageSize)
+            {
+                TotalRecords = cards.ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                                    .Count(),
+                TotalPages = (int)Math.Ceiling(cards.ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.Artist, filter.RarityCode)
+                                    .Count() / (double)filter.PageSize)
             }
           );
         }
