@@ -20,6 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<ICardRepository, SQLCardRepository>();
 builder.Services.AddScoped<IArtistRepository, SQLArtistRepository>();
 builder.Services.AddScoped<ITypeRepository, SQLTypeRepository>();
+builder.Services.AddScoped<IRarityRepository, SQLRarityRepository>();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1.1", new OpenApiInfo

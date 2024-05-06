@@ -9,34 +9,34 @@ using WebAPI.Wrappers;
 
 namespace HWebAPI.Controllers
 {
-    [Route("api/artists")]
+    [Route("api/rarities")]
     [ApiController]
-    public class ArtistController : ControllerBase
+    public class RarityController : ControllerBase
     {
-        private readonly IArtistRepository _artistRepo;
+        private readonly IRarityRepository _rarityRepo;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
 
-        public ArtistController(IArtistRepository repo, IMapper mapper, IMemoryCache cache)
+        public RarityController(IRarityRepository repo, IMapper mapper, IMemoryCache cache)
         {
-            _artistRepo = repo;
+            _rarityRepo = repo;
             _mapper = mapper;
             _cache = cache;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ArtistDTO>>> GetArtists([FromServices] IConfiguration config)
+        public async Task<ActionResult<IEnumerable<RarityDTO>>> GetAllRarities([FromServices] IConfiguration config)
         {
-            string cacheKey = "Artists";
+            string cacheKey = "Rarities";
 
-            if (!_cache.TryGetValue(cacheKey, out IEnumerable<ArtistDTO> cachedResult))
+            if (!_cache.TryGetValue(cacheKey, out IEnumerable<RarityDTO> cachedResult))
             {
-                var allArtists = _artistRepo.GetArtists();
+                var allRarities = _rarityRepo.GetAllRarities();
 
-                if (allArtists != null)
+                if (allRarities != null)
                 {
-                    cachedResult = await allArtists
-                        .ProjectTo<ArtistDTO>(_mapper.ConfigurationProvider)
+                    cachedResult = await allRarities
+                        .ProjectTo<RarityDTO>(_mapper.ConfigurationProvider)
                         .ToListAsync();
 
                     MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
@@ -47,11 +47,11 @@ namespace HWebAPI.Controllers
                 }
                 else
                 {
-                    return NotFound(new Response<ArtistDTO>()
+                    return NotFound(new Response<RarityDTO>()
                     {
                         Succeeded = false,
                         Errors = new string[] { "404" },
-                        Message = $"No artists were found"
+                        Message = $"No rarities were found"
                     });
                 }
             }
