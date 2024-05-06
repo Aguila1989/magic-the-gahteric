@@ -149,7 +149,7 @@ namespace WebAPI.Controllers.V1_1
 
                 if (!_cache.TryGetValue(cacheKey, out CardDetailDTO cachedResult))
                 {
-                    var card = await _cardRepo.GetCardbyId(id);
+                    var card = await _cardRepo.GetCardById(id);
 
                     if (card != null)
                     {
