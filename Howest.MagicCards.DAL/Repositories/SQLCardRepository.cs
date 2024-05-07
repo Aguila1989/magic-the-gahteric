@@ -22,7 +22,11 @@ namespace Howest.MagicCards.DAL.Repositories
         {
             return await _db.Cards.SingleOrDefaultAsync(c => c.Id == id);
         }
+
+
+        public IQueryable<Card> GetCardsByArtist(long artistId)
+        {
+            return _db.Cards.Where(card => card.Artist.Id == artistId);
+        }
     }
-
-
 }

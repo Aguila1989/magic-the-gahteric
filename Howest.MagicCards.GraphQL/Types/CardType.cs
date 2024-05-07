@@ -1,11 +1,12 @@
 ﻿using GraphQL.Types;
 using Howest.MagicCards.DAL.Models;
+using Howest.MagicCards.DAL.Repositories;
 
 namespace Howest.MagicCards.GraphQL.Types
 {
     public class CardType : ObjectGraphType<Card>
     {
-        public CardType() 
+        public CardType(IArtistRepository artistRepo) 
         {
             Name = "Card";
 
@@ -20,6 +21,8 @@ namespace Howest.MagicCards.GraphQL.Types
             Field(c => c.Flavor).Description("Card Flavor");
             Field(c => c.OriginalImageUrl).Description("Card Url To Image");
             Field(c => c.MultiverseId, nullable: true).Description("Card Multiverse ID");
+
+            Field<ArtistType>("Artist of this card").Resolve(context => artistRepo.GetArtistById(context.Source.Id));
         }
     }
 }
