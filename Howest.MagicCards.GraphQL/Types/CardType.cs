@@ -5,20 +5,21 @@ namespace Howest.MagicCards.GraphQL.Types
 {
     public class CardType : ObjectGraphType<Card>
     {
-        public CardType() {
+        public CardType() 
+        {
             Name = "Card";
 
-            Field(x => x.Id, type: typeof(IdGraphType)).Description("Card Id");
-            Field(x => x.Name).Description("Card Name");
-            Field(x => x.ManaCost).Description("Card Mana Cost");
-            Field(x => x.ConvertedManaCost).Description("Card Converted Mana Cost");
-            Field(x => x.Type).Description("Card Type");
-            Field(x => x.RarityCode).Description("Card Rarity Code");
-            Field(x => x.SetCode).Description("Card Set Code");
-            Field(x => x.Text).Description("Card Text");
-            Field(x => x.Flavor).Description("Card Flavor");
-            Field(x => x.OriginalImageUrl).Description("Card Url To Image");
-            Field(x => x.MultiverseId, nullable: true).Description("Card Multiverse ID");
+            Field(c => c.Id, type: typeof(IdGraphType)).Description("Card Id");
+            Field(c => c.Name).Description("Card Name");
+            Field(c => c.ManaCost).Description("Card Mana Cost");
+            Field(c => c.ConvertedManaCost).Description("Card Converted Mana Cost");
+            Field(c => c.Type).Description("Card Type");
+            Field(c => c.RarityCode).Description("Card Rarity Code");
+            Field(c => c.SetCode).Description("Card Set Code");
+            Field(c => c.Text).Description("Card Text");
+            Field(c => c.Flavor).Description("Card Flavor");
+            Field(c => c.OriginalImageUrl).Description("Card Url To Image");
+            Field(c => c.MultiverseId, nullable: true).Description("Card Multiverse ID");
         }
     }
 }
