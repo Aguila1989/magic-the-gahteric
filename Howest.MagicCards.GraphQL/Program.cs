@@ -11,7 +11,13 @@ ConfigureDatabase(builder.Services, builder.Configuration);
 ConfigureGraphQL(builder.Services);
 
 var app = builder.Build();
-app.UseGraphQLPlayground();
+app.UseGraphQLPlayground(
+    "/ui/playground", 
+    options: new PlaygroundOptions()
+{
+    EditorTheme = EditorTheme.Dark
+});
+
 app.UseGraphQL<RootSchema>();
 
 void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
