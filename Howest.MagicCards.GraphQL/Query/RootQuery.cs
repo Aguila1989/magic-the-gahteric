@@ -11,7 +11,36 @@ namespace Howest.MagicCards.GraphQL.GraphQL.Query
         {
             Field<ListGraphType<CardType>>(
                 "cards",
+                Description = "Get all Cards",
                 resolve: context => (cardRepo.GetAllCards()).ToList()
+            );
+
+            Field<CardType>(
+                "card",
+                Description = "Get one Card by Id",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>> { Name = "id" }),
+                resolve: context =>
+                {
+                    int id = context.GetArgument<int>("id");
+                    return cardRepo.GetCardById(id);
+                }
+            );
+
+            Field<ListGraphType<ArtistType>>(
+                "artists",
+                Description = "Get all Artists",
+                resolve: context => (artistRepo.GetArtists()).ToList()
+            );
+
+            Field<ArtistType>(
+                "artist",
+                Description = "Get one Artist by Id",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>> { Name = "id" }),
+                resolve: context =>
+                {
+                    int id = context.GetArgument<int>("id");
+                    return artistRepo.GetArtistById(id);
+                }
             );
         }
     }
