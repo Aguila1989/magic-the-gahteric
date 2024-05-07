@@ -22,7 +22,7 @@ namespace Howest.MagicCards.GraphQL.Types
             Field(c => c.OriginalImageUrl).Description("Card Url To Image");
             Field(c => c.MultiverseId, nullable: true).Description("Card Multiverse ID");
 
-            Field<ArtistType>("Artist of this card").Resolve(context => artistRepo.GetArtistById(context.Source.Id));
+            Field<ArtistType>("Artist of this card", resolve: context => artistRepo.GetArtistById(context.Source.Id));
         }
     }
 }
