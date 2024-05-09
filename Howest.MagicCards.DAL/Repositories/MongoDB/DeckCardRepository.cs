@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Howest.MagicCards.DAL.Repositories.MongoDB
 {
-    public class DeckCardRepository
+    public class DeckCardRepository : IDeckCardRepository
     {
         private readonly IMongoCollection<DeckCard> _deckCardCollection;
-        public DeckCardRepository(IOptions<MongoDBSettings> settings) 
+        public DeckCardRepository(IOptions<MongoDBSettings> settings)
         {
             var mongoClient = new MongoClient(
                 settings.Value.ConnectionString);
@@ -24,7 +24,7 @@ namespace Howest.MagicCards.DAL.Repositories.MongoDB
             _deckCardCollection = mongoDatabase.GetCollection<DeckCard>(
                 settings.Value.CollectionName);
         }
-    
+
 
         public async Task<List<DeckCard>> GetAllDeckCards() =>
             await _deckCardCollection.Find(dc => true).ToListAsync();
