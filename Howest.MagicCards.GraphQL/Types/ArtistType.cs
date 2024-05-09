@@ -13,7 +13,7 @@ namespace Howest.MagicCards.GraphQL.Types
             Field(a => a.Id, type: typeof(IdGraphType)).Description("Artist Id");
             Field(a => a.FullName).Description("Artist Complete Name");
 
-            Field<ListGraphType<CardType>>("cards of this artist", resolve:context => cardRepo.GetCardsByArtist(context.Source.Id));
+            Field<ListGraphType<CardType>>("cards of this artist", resolve:context => cardRepo.GetCardsByArtist(context.Source.Id).ToList());
 
         }
     }

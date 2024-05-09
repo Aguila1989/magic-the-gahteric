@@ -4,39 +4,34 @@ using Howest.MagicCards.GraphQL.GraphQL.Schemas;
 using Microsoft.EntityFrameworkCore;
 using Howest.MagicCards.DAL.DBContext;
 using GraphQL.Server.Ui.Playground;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ConfigureDatabase(builder.Services, builder.Configuration);
-ConfigureGraphQL(builder.Services);
+ConfigurationManager config = builder.Configuration;
+
+builder.Services.AddDbContext<MTGContext>(options =>
+        options.UseSqlServer(config.GetConnectionString("MagicCardsDb")));
+
+builder.Services.AddScoped<ICardRepository, SQLCardRepository>();
+builder.Services.AddScoped<IArtistRepository, SQLArtistRepository>();
+
+builder.Services.AddScoped<RootSchema>();
+builder.Services.AddGraphQL()
+        .AddGraphTypes(typeof(RootSchema), ServiceLifetime.Scoped)
+        .AddDataLoader()
+        .AddSystemTextJson();
 
 var app = builder.Build();
+
+app.UseGraphQL<RootSchema>();
 app.UseGraphQLPlayground(
     "/ui/playground", 
-    options: new PlaygroundOptions()
+    new PlaygroundOptions()
 {
     EditorTheme = EditorTheme.Dark
 });
 
-app.UseGraphQL<RootSchema>();
-
-void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
-{
-    services.AddDbContext<MTGContext>(options =>
-        options.UseSqlServer(configuration.GetConnectionString("MagicCardsDb")));
-
-    services.AddScoped<ICardRepository, SQLCardRepository>();
-    services.AddScoped<IArtistRepository, SQLArtistRepository>();
-}
-
-void ConfigureGraphQL(IServiceCollection services)
-{
-    services.AddScoped<RootSchema>();
-    services.AddGraphQL()
-            .AddGraphTypes(typeof(RootSchema), ServiceLifetime.Scoped)
-            .AddDataLoader()
-            .AddSystemTextJson();
-}
 
 app.Run();
 
