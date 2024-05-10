@@ -29,7 +29,7 @@ namespace Howest.MagicCards.DAL.Repositories.MongoDB
         public async Task<List<DeckCard>> GetAllDeckCards() =>
             await _deckCardCollection.Find(dc => true).ToListAsync();
 
-        public async Task<DeckCard> GetDeckCardById(string id) =>
+        public async Task<DeckCard> GetDeckCardById(decimal id) =>
             await _deckCardCollection.Find(dc => dc.DeckCardId == id).FirstOrDefaultAsync();
 
         public async Task CreateDeckCard(DeckCard newDeckCard) =>
@@ -38,7 +38,7 @@ namespace Howest.MagicCards.DAL.Repositories.MongoDB
         public async Task UpdateDeckCard(DeckCard updatedDeckCard) =>
             await _deckCardCollection.ReplaceOneAsync(dc => dc.DeckCardId == updatedDeckCard.DeckCardId, updatedDeckCard);
 
-        public async Task DeleteDeckCard(string id) =>
+        public async Task DeleteDeckCard(decimal id) =>
             await _deckCardCollection.DeleteOneAsync(dc => dc.DeckCardId == id);
 
 

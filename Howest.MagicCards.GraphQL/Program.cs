@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager config = builder.Configuration;
 
 builder.Services.AddDbContext<MTGContext>(options =>
-        options.UseSqlServer(config.GetConnectionString("MagicCardsDb")));
+        options.UseSqlServer(config.GetConnectionString("MagicTheGatheringDb")));
 
 builder.Services.AddScoped<ICardRepository, SQLCardRepository>();
 builder.Services.AddScoped<IArtistRepository, SQLArtistRepository>();
