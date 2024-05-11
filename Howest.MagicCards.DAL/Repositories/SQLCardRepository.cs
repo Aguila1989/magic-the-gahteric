@@ -13,9 +13,10 @@ namespace Howest.MagicCards.DAL.Repositories
             _db = db;
         }
 
-        public IQueryable<Card> GetAllCards()
+        public async Task<IQueryable<Card>> GetAllCards()
         {
-            return _db.Cards.Select(c => c);
+            IQueryable <Card> allCards = _db.Cards.Select(c => c);
+            return await Task.FromResult(allCards);
         }
 
         public async Task<Card> GetCardById(int id)
@@ -24,9 +25,10 @@ namespace Howest.MagicCards.DAL.Repositories
         }
 
 
-        public IQueryable<Card> GetCardsByArtist(long artistId)
+        public async Task<IQueryable<Card>> GetCardsByArtist(long artistId)
         {
-            return _db.Cards.Where(card => card.Artist.Id == artistId);
+            IQueryable <Card> allArtistsCards = _db.Cards.Where(card => card.Artist.Id == artistId);
+            return await Task.FromResult(allArtistsCards);
         }
     }
 }
