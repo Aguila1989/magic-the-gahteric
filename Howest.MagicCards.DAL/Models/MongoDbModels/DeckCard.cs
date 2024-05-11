@@ -8,7 +8,6 @@ namespace Howest.MagicCards.DAL.Models.MongoDbModels
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
-
         public decimal DeckCardId { get; set; }
         public string Name { get; set; } = null!;
         public decimal Quantity { get; set; }

@@ -9,5 +9,6 @@ namespace Howest.MagicCards.DAL.Repositories.MongoDB
         Task<List<DeckCard>> GetAllDeckCards();
         Task<DeckCard> GetDeckCardById(decimal id);
         Task UpdateDeckCard(DeckCard updatedDeckCard);
+        Task<bool> Exists(decimal deckCardId);
     }
 }
