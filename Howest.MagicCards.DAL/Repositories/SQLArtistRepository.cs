@@ -15,14 +15,16 @@ namespace Howest.MagicCards.DAL.Repositories
         }
 
 
-        public Artist GetArtistById(long id)
+        public async Task <Artist> GetArtistById(long id)
         {
-            return _db.Artists.Where(a => a.Id == id).FirstOrDefault();
+            var existingArtist = await _db.Artists.Where(a => a.Id == id).FirstOrDefaultAsync();
+            return existingArtist;
         }
 
-        public IQueryable<Artist> GetArtists()
+        public async Task<IQueryable<Artist>> GetArtists()
         {
-            return _db.Artists.Include(a => a.Cards).Select(a => a);
+            IQueryable<Artist> allArtists = _db.Artists.Include(a => a.Cards).Select(a => a);
+            return await Task.FromResult(allArtists);
         }
     }
 }
