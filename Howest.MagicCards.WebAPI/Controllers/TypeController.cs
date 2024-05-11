@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Howest.MagicCards.DAL.Repositories;
 using Howest.MagicCards.Shared.DTO;
@@ -9,7 +10,8 @@ using WebAPI.Wrappers;
 
 namespace HWebAPI.Controllers
 {
-    [Route("api/types")]
+    [ApiVersion("1.1"), ApiVersion("1.5")]
+    [Route("api/v{version:apiVersion}/types")]
     [ApiController]
     public class TypeController : ControllerBase
     {
@@ -31,7 +33,7 @@ namespace HWebAPI.Controllers
 
             if (!_cache.TryGetValue(cacheKey, out IEnumerable<TypeDTO> cachedResult))
             {
-                var allTypes = _typeRepo.GetNormalTypes();
+                var allTypes = await _typeRepo.GetNormalTypes();
 
                 if (allTypes != null)
                 {

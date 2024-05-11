@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Howest.MagicCards.DAL.Repositories;
 using Howest.MagicCards.Shared.DTO;
@@ -9,7 +10,8 @@ using WebAPI.Wrappers;
 
 namespace HWebAPI.Controllers
 {
-    [Route("api/artists")]
+    [ApiVersion("1.1"), ApiVersion("1.5")]
+    [Route("api/v{version:apiVersion}/artists")]
     [ApiController]
     public class ArtistController : ControllerBase
     {
@@ -31,7 +33,7 @@ namespace HWebAPI.Controllers
 
             if (!_cache.TryGetValue(cacheKey, out IEnumerable<ArtistDTO> cachedResult))
             {
-                var allArtists = _artistRepo.GetArtists();
+                var allArtists =await  _artistRepo.GetArtists();
 
                 if (allArtists != null)
                 {

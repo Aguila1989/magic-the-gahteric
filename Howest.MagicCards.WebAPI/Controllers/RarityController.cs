@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Howest.MagicCards.DAL.Repositories;
 using Howest.MagicCards.Shared.DTO;
@@ -9,7 +10,8 @@ using WebAPI.Wrappers;
 
 namespace HWebAPI.Controllers
 {
-    [Route("api/rarities")]
+    [ApiVersion("1.1"), ApiVersion("1.5")]
+    [Route("api/v{version:apiVersion}/rarities")]
     [ApiController]
     public class RarityController : ControllerBase
     {
@@ -31,7 +33,7 @@ namespace HWebAPI.Controllers
 
             if (!_cache.TryGetValue(cacheKey, out IEnumerable<RarityDTO> cachedResult))
             {
-                var allRarities = _rarityRepo.GetAllRarities();
+                var allRarities = await _rarityRepo.GetAllRarities();
 
                 if (allRarities != null)
                 {

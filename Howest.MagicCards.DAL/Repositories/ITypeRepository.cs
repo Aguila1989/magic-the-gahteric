@@ -4,6 +4,6 @@ namespace Howest.MagicCards.DAL.Repositories
 {
     public interface ITypeRepository
     {
-        IQueryable<Type> GetNormalTypes();
+        Task<IQueryable<Type>> GetNormalTypes();
     }
 }

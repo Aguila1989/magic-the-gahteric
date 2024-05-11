@@ -4,6 +4,6 @@ namespace Howest.MagicCards.DAL.Repositories
 {
     public interface IRarityRepository
     {
-        IQueryable<Rarity> GetAllRarities();
+        Task <IQueryable<Rarity>> GetAllRarities();
     }
 }

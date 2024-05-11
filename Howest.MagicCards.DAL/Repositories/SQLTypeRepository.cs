@@ -14,10 +14,10 @@ namespace Howest.MagicCards.DAL.Repositories
             _db = db;
         }
 
-        public IQueryable<Type> GetNormalTypes()
+        public async Task<IQueryable<Type>>GetNormalTypes()
         {
-            return _db.Types
-                  .Where(t => t.Type1.Equals("normal"));
+            IQueryable<Type> allNormalTypes = _db.Types.Where(t => t.Type1.Equals("normal"));
+            return await Task.FromResult(allNormalTypes);
         }
     }
 }

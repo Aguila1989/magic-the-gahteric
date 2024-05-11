@@ -10,12 +10,12 @@ namespace Howest.MagicCards.DAL.Repositories
         {
             _db = db;
         }
-        public IQueryable<Rarity> GetAllRarities()
+        public async Task<IQueryable<Rarity>> GetAllRarities()
         {
 
             IQueryable<Rarity> allRarities = _db.Rarities
                                            .Select(b => b);
-            return allRarities;
+            return await Task.FromResult(allRarities);
         }
     }
 }

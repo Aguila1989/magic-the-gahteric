@@ -33,7 +33,7 @@ namespace WebAPI.Controllers.V1_1
         [HttpGet]
         public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilter filter)
         {
-            IQueryable<Card> cards = _cardRepo.GetAllCards();
+            IQueryable<Card> cards = await _cardRepo.GetAllCards();
 
             if (cards == null)
             {
@@ -107,7 +107,7 @@ namespace WebAPI.Controllers.V1_1
                     return Ok(cachedResponse);
                 }
 
-                IQueryable<Card> cards = _cardRepo.GetAllCards();
+                IQueryable<Card> cards = await _cardRepo.GetAllCards();
 
                 if (cards == null)
                 {
