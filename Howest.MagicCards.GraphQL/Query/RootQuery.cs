@@ -9,11 +9,12 @@ namespace Howest.MagicCards.GraphQL.GraphQL.Query
     {
         public RootQuery(ICardRepository cardRepo, IArtistRepository artistRepo)
         {
-            Field<ListGraphType<CardType>>(
+            FieldAsync<ListGraphType<CardType>>(
                 "cards",
                 Description = "Get all Cards",
-                resolve: context => (cardRepo.GetAllCards()).ToList()
-            );
+                resolve: async context => await Task.FromResult((await cardRepo.GetAllCards()).ToList())
+                );
+
 
             Field<CardType>(
                 "card",
@@ -26,11 +27,12 @@ namespace Howest.MagicCards.GraphQL.GraphQL.Query
                 }
             );
 
-            Field<ListGraphType<ArtistType>>(
+            FieldAsync<ListGraphType<ArtistType>>(
                 "artists",
                 Description = "Get all Artists",
-                resolve: context => (artistRepo.GetArtists()).ToList()
+                resolve: async context => await Task.FromResult((await artistRepo.GetArtists()).ToList())
             );
+
 
             Field<ArtistType>(
                 "artist",

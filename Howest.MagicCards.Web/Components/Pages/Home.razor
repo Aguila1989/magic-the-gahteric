@@ -1,7 +1,65 @@
 ﻿@page "/"
 
 <PageTitle>Home</PageTitle>
+<header>
+    <h1>Magic the Gathering Deck Builder</h1>
+</header>
+<main>
+    <form>
+        <fieldset>
+            <div>
+                <label for="name" >Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter Name"/>
+            </div>
+            <div>
+                <label for="artist">Artist:</label>
+                <input type="text" id="artist" name="artist" placeholder="Enter Artist"/>
+            </div>
+            <div>
+                <label for="text">Text:</label>
+                <input type="text" id="text" name="text" placeholder="Enter (part of) text"/>
+            </div>
+        </fieldset>
+        <fieldset>
+            <div>
+                <label for="set-code">Set Code:</label>
+                <input type="text" id="set-code" name="set-code" placeholder="Enter Set Code"/>
+            </div>
+            <div>
+                <label for="rarity">Rarity:</label>
+                <select id="rarity">
+                </select>
+            </div>
+            <div>
+                <label for="card-type">Card Type:</label>
+                <select id="card-type">
+                </select>
+            </div>
+        </fieldset>
+            <button>Apply Filters</button>
+    </form>
+    <ul>
 
-<h1>Hello, world!</h1>
+    </ul>
+</main>
 
-Welcome to your new app.
+<script>
+    const rarities = ["Common", "Uncommon", "Rare", "Mythic Rare"];
+    const cardTypes = ["Creature", "Instant", "Sorcery", "Enchantment", "Artifact", "Planeswalker", "Land"];
+    const raritySelect = document.getElementById("rarity");
+    const cardTypeSelect = document.getElementById("card-type");
+
+    rarities.forEach(rarity => {
+        const option = document.createElement("option");
+        option.value = rarity;
+        option.textContent = rarity;
+        raritySelect.appendChild(option);
+    });
+
+    cardTypes.forEach(cardType => {
+        const option = document.createElement("option");
+        option.value = cardType;
+        option.textContent = cardType;
+        cardTypeSelect.appendChild(option);
+    });
+</script>

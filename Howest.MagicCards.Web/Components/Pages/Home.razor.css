@@ -1,0 +1,27 @@
+﻿header {
+    background-color: black;
+}
+
+h1 {
+    font-size: 2rem;
+    color: white;
+}
+
+fieldset {
+    display: flex;
+}
+
+label {
+    display: block;
+    font-size: 1.5rem;
+}
+
+input, select {
+    margin-right: 2rem;
+    margin-bottom: 0.5rem;
+    width: 25rem;
+    height: 2rem;
+    border-radius: 0.35rem;
+    border: solid, black;
+    box-shadow: 0.2rem 0.2rem 0.2rem grey;
+}
