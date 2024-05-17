@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using Howest.MagicCards.DAL.Models
+@using Howest.MagicCards.Shared.DTO
 
 <PageTitle>Home</PageTitle>
 <body>
@@ -6,6 +8,7 @@
     <h1>Magic the Gathering Deck Builder</h1>
 </header>
 <main>
+            <h2>Cards</h2>
     <form>
         <fieldset>
             <div>
@@ -28,56 +31,68 @@
             </div>
             <div>
                 <label for="rarity">Rarity:</label>
-                <select id="rarity">
-                </select>
+                <InputSelect id="rarity" @bind-Value="@model.Rarity">
+                    <option value="">All Rarities</option>
+                    @if (_rarities is not null)
+                    {
+                        @foreach (RarityDTO rarity in _rarities)
+                        {
+                            <option value="@rarity.Name">@rarity.Name</option>
+                        }
+                    }
+                </InputSelect>
             </div>
             <div>
                 <label for="card-type">Card Type:</label>
-                <select id="card-type">
-                </select>
+                    <InputSelect id="card-type" @bind-Value="@model.Type">
+                        <option value="">All Types</option>
+                        @if (_types is not null)
+                        {
+                            @foreach (TypeDTO type in _types)
+                            {
+                                <option value="@type.Name">@type.Name</option>
+                            }
+                        }
+                </InputSelect>
             </div>
         </fieldset>
             <button>Apply Filters</button>
     </form>
+    <div class="result">
+        <div class="cards">
     <ul>
-
+            @foreach (CardDTO card in _cards)
+            {
+                <li>
+                    @if (string.IsNullOrEmpty(card.ImageUrl))
+                    {
+                        <img src="/Magic_card_back.jpg" alt="Card Image" />
+                    }
+                    else
+                    {
+                        <img src="@card.ImageUrl" alt="@card.Name"/>
+                    })
+                </li>
+            }
     </ul>
-        <script>
-            const cardTypes = ["Creature", "Instant", "Sorcery", "Enchantment", "Artifact", "Planeswalker", "Land"];
-            const raritySelect = document.getElementById("rarity");
-            const cardTypeSelect = document.getElementById("card-type");
-
-            fetch('https://localhost:7195/api/v1.5/rarities')
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(rarity => {
-                        console.log(rarity.name);
-                        const option = document.createElement("option");
-                        option.value = rarity.name;
-                        option.textContent = rarity.name;
-                        raritySelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching rarities:', error);
-                });
-
-            fetch('https://localhost:7195/api/v1.5/types')
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(type => {
-                        console.log(type.name);
-                        const option = document.createElement("option");
-                        option.value = type.name;
-                        option.textContent = type.name;
-                        raritySelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching types:', error);
-                });
-            
-        </script>
+        </div>
+        <div class="deck">
+            <h2>Deck</h2>
+            <h3>Click cards to add to </h3>
+            <ul>
+                
+            </ul>
+        </div>
+        </div>
 </main>
 </body>
 
+@code{
+    private Index model = new Index();
+
+    public class Index
+    {
+        public string Rarity { get; set; }
+        public string Type { get; set; }
+    }
+}

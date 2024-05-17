@@ -12,7 +12,25 @@ h1 {
 
 main{
     background-color: lightgrey;
-    height: 90vh;
+    padding: 0.5rem;
+}
+
+form{
+    display: block;
+}
+
+.result{
+    display: flex;
+}
+
+.cards {
+    padding: 0.25rem;
+    max-width: 55vw;
+    border-right: solid 0.2rem black;
+    }
+
+.deck{
+    width: 40vw;
     padding: 0.5rem;
 }
 
@@ -25,7 +43,7 @@ label {
     font-size: 1.5rem;
 }
 
-input, select {
+input, InputSelect {
     margin-right: 2rem;
     margin-bottom: 0.5rem;
     width: 25rem;
@@ -33,4 +51,19 @@ input, select {
     border-radius: 0.35rem;
     border: solid, black;
     box-shadow: 0.2rem 0.2rem 0.2rem grey;
+}
+
+ul{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+li{
+    padding: 0.5rem;
+    list-style-type: none;
+}
+
+img{
+    width: 223px;
+    height: 310px;
 }

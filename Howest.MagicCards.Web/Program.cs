@@ -1,10 +1,21 @@
 using Howest.MagicCards.Web.Components;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient("WebAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7195/api/v1.5/");
+});
+
+builder.Services.AddHttpClient("MinimalAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7079/api/");
+});
 
 var app = builder.Build();
 
