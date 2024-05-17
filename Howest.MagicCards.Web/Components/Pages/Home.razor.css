@@ -11,26 +11,30 @@ h1 {
 }
 
 main{
+    display: flex;
+    flex-direction: column;
     background-color: lightgrey;
     padding: 0.5rem;
 }
 
 form{
     display: block;
+    background-color: burlywood;
 }
 
-.result{
+.result {
     display: flex;
+    flex-direction: row;
 }
 
 .cards {
     padding: 0.25rem;
-    max-width: 55vw;
+    max-width: 67vw;
     border-right: solid 0.2rem black;
     }
 
 .deck{
-    width: 40vw;
+    width: 28vw;
     padding: 0.5rem;
 }
 

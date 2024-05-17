@@ -35,14 +35,28 @@ namespace Howest.MagicCards.DAL.Repositories.MongoDB
         public async Task CreateDeckCard(DeckCard newDeckCard) =>
             await _deckCardCollection.InsertOneAsync(newDeckCard);
 
-        public async Task UpdateDeckCard(DeckCard updatedDeckCard)
+        public async Task UpdateDeckCard(int cardID)
         {
-            var filter = Builders<DeckCard>.Filter.Eq(dc => dc.DeckCardId, updatedDeckCard.DeckCardId);
-            var update = Builders<DeckCard>.Update
-                .Set(dc => dc.Name, updatedDeckCard.Name)
-                .Set(dc => dc.DeckCardId, updatedDeckCard.DeckCardId)
-                .Set(dc => dc.Quantity, updatedDeckCard.Quantity);
-            await _deckCardCollection.UpdateOneAsync(filter, update);
+            List<DeckCard> deckCards = await GetAllDeckCards();
+
+            if (FullDeck(deckCards))
+            {
+                throw new Exception("Deck is full");
+            }
+
+            DeckCard cardFound = deckCards.FirstOrDefault(dc => dc.DeckCardId == cardID);
+
+            if (cardFound == null)
+            {
+                await _deckCardCollection.InsertOneAsync(new DeckCard { DeckCardId = cardID, Quantity = 1 });
+            }
+            else
+            {
+                // Increase quantity
+                cardFound.Quantity++;
+                await _deckCardCollection.ReplaceOneAsync(dc => dc.DeckCardId == cardID, cardFound);
+            }
+
         }
 
         public async Task DeleteDeckCard(decimal id) =>
@@ -54,5 +68,12 @@ namespace Howest.MagicCards.DAL.Repositories.MongoDB
             return existingCard != null;
         }
 
+        private bool FullDeck(List<DeckCard> deckCards)
+        {
+            int fullDeck = 60;
+            return deckCards.Sum(dc => dc.Quantity) >= fullDeck;
+        }
     }
+
+
 }

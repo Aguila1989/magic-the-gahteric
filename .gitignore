@@ -361,3 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Howest.MagicCards.DAL/Models/MongoDbModels/Deck.cs

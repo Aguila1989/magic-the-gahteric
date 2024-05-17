@@ -9,7 +9,6 @@ namespace Howest.MagicCards.Shared.Mappings
         public DeckCardProfile()
         {
             CreateMap<DeckCard, DeckCardDTO>();
-
         }
 
     }

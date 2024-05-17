@@ -1,9 +1,10 @@
 ﻿@page "/"
 @using Howest.MagicCards.DAL.Models
 @using Howest.MagicCards.Shared.DTO
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
-<body>
+
 <header>
     <h1>Magic the Gathering Deck Builder</h1>
 </header>
@@ -63,7 +64,7 @@
     <ul>
             @foreach (CardDTO card in _cards)
             {
-                <li>
+                <li @onclick="() => AddCard(Int32.Parse(card.Id))">
                     @if (string.IsNullOrEmpty(card.ImageUrl))
                     {
                         <img src="/Magic_card_back.jpg" alt="Card Image" />
@@ -80,19 +81,34 @@
             <h2>Deck</h2>
             <h3>Click cards to add to </h3>
             <ul>
-                
+                @if (_deckCards is not null)
+                {
+                    @foreach (DeckCardDTO card in _deckCards)
+                    {
+                        <li>
+                            @card.Quantity x @card.DeckCardId
+                        </li>
+                    }
+                }
             </ul>
         </div>
         </div>
 </main>
-</body>
 
 @code{
     private Index model = new Index();
+
+    private string message = "Hello";
 
     public class Index
     {
         public string Rarity { get; set; }
         public string Type { get; set; }
+    }
+
+    public void Testing()
+    {
+        message = "Button clicked";
+        StateHasChanged();
     }
 }

@@ -9,6 +9,7 @@ namespace Howest.MagicCards.Shared.DTO
     public record DeckCardDTO
     {
         public string Id { get; init; }
+        public int DeckCardId { get; init; }
         public string Name { get; init; }
         public decimal Quantity { get; init; }
     }

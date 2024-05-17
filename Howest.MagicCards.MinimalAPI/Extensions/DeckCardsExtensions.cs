@@ -39,15 +39,10 @@ namespace Howest.MagicCards.MinimalAPI.Extensions
             .Accepts<DeckCard>("application/json");
 
 
-            deckCardsGroup.MapPut("", async (DeckCard updatedDeckCard) =>
+            deckCardsGroup.MapPut("{cardID:int}", async (int cardID) =>
             {
-                if (!await repo.Exists(updatedDeckCard.DeckCardId))
-                {
-                    return Results.NotFound($"DeckCard with id {updatedDeckCard.DeckCardId} not found");
-                }
-
-                await repo.UpdateDeckCard(updatedDeckCard);
-                return Results.Ok(updatedDeckCard);
+                await repo.UpdateDeckCard(cardID);
+                return Results.Ok(cardID);
             })
             .Accepts<DeckCard>("application/json");
 
