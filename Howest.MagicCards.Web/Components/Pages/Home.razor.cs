@@ -185,6 +185,22 @@ namespace Howest.MagicCards.Web.Components.Pages
             }
         }
 
+        protected async Task DecreaseCard(int cardId)
+        {
+            HttpResponseMessage response = await _httpMinimalClient.PutAsync($"deckCards/{cardId}/decrease", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _deckCards = await GetCardsDeck();
+                await LoadDeckCardsWithNamesAsync();
+                StateHasChanged();
+            }
+            else
+            {
+                _message = "Error decreasing card quantity!";
+            }
+        }
+
         public class Index
         {
             public string Rarity { get; set; }

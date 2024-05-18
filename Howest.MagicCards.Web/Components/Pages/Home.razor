@@ -99,9 +99,10 @@
                     {
                         <li>
                             <p>
-                                <strong @onclick="() => DeleteCard(deckCard.DeckCard.DeckCardId)">-</strong>
+                                <strong @onclick="() => DecreaseCard(deckCard.DeckCard.DeckCardId)">- </strong>
                                 @deckCard.DeckCard.Quantity x @deckCard.CardName
                                 <strong @onclick="() => AddCard(deckCard.DeckCard.DeckCardId)">+</strong>
+                                <span @onclick="() => DeleteCard(deckCard.DeckCard.DeckCardId)">          Delete Card</span>
                             </p>
                         </li>
                     }
