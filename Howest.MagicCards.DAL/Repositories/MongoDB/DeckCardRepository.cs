@@ -73,7 +73,29 @@ namespace Howest.MagicCards.DAL.Repositories.MongoDB
             int fullDeck = 60;
             return deckCards.Sum(dc => dc.Quantity) >= fullDeck;
         }
+
+        public async Task DecreaseDeckCardQuantity(int cardID)
+        {
+            DeckCard cardFound = await GetDeckCardById(cardID);
+
+            if (cardFound != null)
+            {
+                if (cardFound.Quantity > 1)
+                {
+                    // Decrease quantity
+                    cardFound.Quantity--;
+                    await _deckCardCollection.ReplaceOneAsync(dc => dc.DeckCardId == cardID, cardFound);
+                }
+                else
+                {
+                    // If quantity is 1, delete the card
+                    await DeleteDeckCard(cardID);
+                }
+            }
+
+        }
+
+
+
+
     }
-
-
-}

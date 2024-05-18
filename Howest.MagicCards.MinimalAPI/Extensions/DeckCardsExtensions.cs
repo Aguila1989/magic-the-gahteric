@@ -54,6 +54,19 @@ namespace Howest.MagicCards.MinimalAPI.Extensions
                 return Results.Ok($"Card with id {id} has been deleted");
             });
 
+            deckCardsGroup.MapPut("{cardID:int}/decrease", async (int cardID) =>
+            {
+                try
+                {
+                    await repo.DecreaseDeckCardQuantity(cardID);
+                    return Results.Ok($"Quantity of card with id {cardID} has been decreased");
+                }
+                catch (Exception ex)
+                {
+                    return Results.Conflict(ex.Message);
+                }
+            });
+
 
 
         }
