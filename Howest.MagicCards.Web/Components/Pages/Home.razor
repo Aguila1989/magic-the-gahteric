@@ -93,15 +93,15 @@
             <h2>Deck</h2>
             <h3>Click cards to add to</h3>
             <ul>
-                @if (_deckCards is not null)
+                @if (_deckCardsWithNames is not null)
                 {
-                    @foreach (DeckCardDTO card in _deckCards)
+                    @foreach (var deckCard in _deckCardsWithNames)
                     {
                         <li>
                             <p>
-                                <strong @onclick="() => DeleteCard(card.DeckCardId)">-</strong> 
-                                @card.Quantity x @GetCardName(card.DeckCardId)
-                                <strong @onclick="() => AddCard(card.DeckCardId)">+</strong>
+                                <strong @onclick="() => DeleteCard(deckCard.DeckCard.DeckCardId)">-</strong>
+                                @deckCard.DeckCard.Quantity x @deckCard.CardName
+                                <strong @onclick="() => AddCard(deckCard.DeckCard.DeckCardId)">+</strong>
                             </p>
                         </li>
                     }

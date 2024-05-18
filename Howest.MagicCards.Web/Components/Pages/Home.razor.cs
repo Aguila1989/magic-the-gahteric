@@ -18,6 +18,8 @@ namespace Howest.MagicCards.Web.Components.Pages
         private IEnumerable<DeckCardDTO> _deckCards = new List<DeckCardDTO>();
         private CardDetailDTO _card = new CardDetailDTO();
         private int currentHoveredCardId;
+        private List<(DeckCardDTO DeckCard, string CardName)> _deckCardsWithNames = new List<(DeckCardDTO DeckCard, string CardName)>();
+
 
         [Inject]
         public IHttpClientFactory HttpClientFactory { get; set; }
@@ -44,6 +46,7 @@ namespace Howest.MagicCards.Web.Components.Pages
             _cards = await GetPagedResponse<CardDTO>("Cards");
             _types = await GetResponse<TypeDTO>("types");
             _deckCards = await GetCardsDeck();
+            await LoadDeckCardsWithNamesAsync();
         }
 
         protected async Task<IEnumerable<T>> GetPagedResponse<T>(string call)
@@ -100,24 +103,18 @@ namespace Howest.MagicCards.Web.Components.Pages
 
         protected async Task AddCard(int cardId)
         {
-            DeckCardDTO deckCard = new DeckCardDTO();
+            var deckCard = new DeckCardDTO();
             HttpResponseMessage response = await _httpMinimalClient.PutAsJsonAsync($"deckCards/{cardId}", deckCard);
-            try
+
+            if (response.IsSuccessStatusCode)
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    _deckCards = await GetCardsDeck();
-                    StateHasChanged();
-                }
-                else
-                {
-                    string errorMessage = $"Error: {response.ReasonPhrase}";
-                    throw new HttpRequestException(errorMessage);
-                }
+                _deckCards = await GetCardsDeck();
+                await LoadDeckCardsWithNamesAsync();
+                StateHasChanged();
             }
-            catch (Exception)
+            else
             {
-                _message = "Deck is full!!!";
+                _message = "Error adding card to deck!";
             }
         }
 
@@ -145,6 +142,7 @@ namespace Howest.MagicCards.Web.Components.Pages
             if (response.IsSuccessStatusCode)
             {
                 _deckCards = await GetCardsDeck();
+                await LoadDeckCardsWithNamesAsync();
                 StateHasChanged();
             }
             else
@@ -159,8 +157,18 @@ namespace Howest.MagicCards.Web.Components.Pages
             await UpdateCardDetail(cardID);
         }
 
-        //get the name of one singlw card when giving the id
-        protected async Task<string> GetCardName(int cardId)
+        private async Task LoadDeckCardsWithNamesAsync()
+        {
+            var tasks = _deckCards.Select(async deckCard =>
+            {
+                var cardName = await GetCardNameAsync(deckCard.DeckCardId);
+                return (DeckCard: deckCard, CardName: cardName);
+            });
+
+            _deckCardsWithNames = (await Task.WhenAll(tasks)).ToList();
+        }
+
+        protected async Task<string> GetCardNameAsync(int cardId)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"cards/{cardId}");
 
