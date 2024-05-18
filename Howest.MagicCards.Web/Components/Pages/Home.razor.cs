@@ -10,22 +10,23 @@ namespace Howest.MagicCards.Web.Components.Pages
 {
     public partial class Home
     {
+        private Index model = new Index();
         private string _message = string.Empty;
-
         private IEnumerable<CardDTO> _cards = new List<CardDTO>();
         private IEnumerable<RarityDTO> _rarities = new List<RarityDTO>();
         private IEnumerable<TypeDTO> _types = new List<TypeDTO>();
         private IEnumerable<DeckCardDTO> _deckCards = new List<DeckCardDTO>();
-
-        private readonly JsonSerializerOptions _jsonOptions;
-
-        private HttpClient _httpClient;
-        private HttpClient _httpMinimalClient;
+        private CardDetailDTO _card = new CardDetailDTO();
+        private int currentHoveredCardId;
 
         [Inject]
         public IHttpClientFactory HttpClientFactory { get; set; }
         [Inject]
         public NavigationManager NavManager { get; set; }
+
+        private readonly JsonSerializerOptions _jsonOptions;
+        private HttpClient _httpClient;
+        private HttpClient _httpMinimalClient;
 
         public Home()
         {
@@ -35,7 +36,6 @@ namespace Howest.MagicCards.Web.Components.Pages
             };
         }
 
-
         protected override async Task OnInitializedAsync()
         {
             _httpClient = HttpClientFactory.CreateClient("WebAPI");
@@ -44,7 +44,6 @@ namespace Howest.MagicCards.Web.Components.Pages
             _cards = await GetPagedResponse<CardDTO>("Cards");
             _types = await GetResponse<TypeDTO>("types");
             _deckCards = await GetCardsDeck();
-
         }
 
         protected async Task<IEnumerable<T>> GetPagedResponse<T>(string call)
@@ -60,14 +59,30 @@ namespace Howest.MagicCards.Web.Components.Pages
             else
             {
                 string errorMessage = $"Error: {response.ReasonPhrase}";
-                //throw new HttpRequestException(errorMessage);
                 return new List<T>();
+            }
+        }
+
+        protected async Task UpdateCardDetail(int cardID)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync($"cards/{cardID}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                _card = JsonSerializer.Deserialize<CardDetailDTO>(apiResponse, _jsonOptions);
+                currentHoveredCardId = cardID;
+                StateHasChanged();
+            }
+            else
+            {
+                string errorMessage = $"Error: {response.ReasonPhrase}";
+                throw new HttpRequestException(errorMessage);
             }
         }
 
         protected async Task<IEnumerable<T>> GetResponse<T>(string call)
         {
-
             HttpResponseMessage response = await _httpClient.GetAsync(call);
 
             if (response.IsSuccessStatusCode)
@@ -87,20 +102,24 @@ namespace Howest.MagicCards.Web.Components.Pages
         {
             DeckCardDTO deckCard = new DeckCardDTO();
             HttpResponseMessage response = await _httpMinimalClient.PutAsJsonAsync($"deckCards/{cardId}", deckCard);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                // update ui deck
-                _deckCards = await GetCardsDeck();
-                StateHasChanged();
+                if (response.IsSuccessStatusCode)
+                {
+                    _deckCards = await GetCardsDeck();
+                    StateHasChanged();
+                }
+                else
+                {
+                    string errorMessage = $"Error: {response.ReasonPhrase}";
+                    throw new HttpRequestException(errorMessage);
+                }
             }
-            else
+            catch (Exception)
             {
-                string errorMessage = $"Error: {response.ReasonPhrase}";
-                throw new HttpRequestException(errorMessage);
+                _message = "Deck is full!!!";
             }
         }
-        
 
         protected async Task<IEnumerable<DeckCardDTO>> GetCardsDeck()
         {
@@ -117,6 +136,51 @@ namespace Howest.MagicCards.Web.Components.Pages
                 string errorMessage = $"Error: {response.ReasonPhrase}";
                 throw new HttpRequestException(errorMessage);
             }
+        }
+
+        protected async Task DeleteCard(int cardId)
+        {
+            HttpResponseMessage response = await _httpMinimalClient.DeleteAsync($"deckCards/{cardId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _deckCards = await GetCardsDeck();
+                StateHasChanged();
+            }
+            else
+            {
+                string errorMessage = $"Error: {response.ReasonPhrase}";
+                throw new HttpRequestException(errorMessage);
+            }
+        }
+
+        private async Task ShowCardDetails(int cardID)
+        {
+            await UpdateCardDetail(cardID);
+        }
+
+        //get the name of one singlw card when giving the id
+        protected async Task<string> GetCardName(int cardId)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync($"cards/{cardId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                CardDTO result = JsonSerializer.Deserialize<CardDTO>(apiResponse, _jsonOptions);
+                return result.Name;
+            }
+            else
+            {
+                string errorMessage = $"Error: {response.ReasonPhrase}";
+                throw new HttpRequestException(errorMessage);
+            }
+        }
+
+        public class Index
+        {
+            public string Rarity { get; set; }
+            public string Type { get; set; }
         }
     }
 }

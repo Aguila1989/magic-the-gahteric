@@ -9,26 +9,26 @@
     <h1>Magic the Gathering Deck Builder</h1>
 </header>
 <main>
-            <h2>Cards</h2>
+    <h2>Cards</h2>
     <form>
         <fieldset>
             <div>
-                <label for="name" >Name:</label>
-                <input type="text" id="name" name="name" placeholder="Enter Name"/>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter Name" />
             </div>
             <div>
                 <label for="artist">Artist:</label>
-                <input type="text" id="artist" name="artist" placeholder="Enter Artist"/>
+                <input type="text" id="artist" name="artist" placeholder="Enter Artist" />
             </div>
             <div>
                 <label for="text">Text:</label>
-                <input type="text" id="text" name="text" placeholder="Enter (part of) text"/>
+                <input type="text" id="text" name="text" placeholder="Enter (part of) text" />
             </div>
         </fieldset>
         <fieldset>
             <div>
                 <label for="set-code">Set Code:</label>
-                <input type="text" id="set-code" name="set-code" placeholder="Enter Set Code"/>
+                <input type="text" id="set-code" name="set-code" placeholder="Enter Set Code" />
             </div>
             <div>
                 <label for="rarity">Rarity:</label>
@@ -45,70 +45,69 @@
             </div>
             <div>
                 <label for="card-type">Card Type:</label>
-                    <InputSelect id="card-type" @bind-Value="@model.Type">
-                        <option value="">All Types</option>
-                        @if (_types is not null)
+                <InputSelect id="card-type" @bind-Value="@model.Type">
+                    <option value="">All Types</option>
+                    @if (_types is not null)
+                    {
+                        @foreach (TypeDTO type in _types)
                         {
-                            @foreach (TypeDTO type in _types)
-                            {
-                                <option value="@type.Name">@type.Name</option>
-                            }
+                            <option value="@type.Name">@type.Name</option>
                         }
+                    }
                 </InputSelect>
             </div>
         </fieldset>
-            <button>Apply Filters</button>
+        <button>Apply Filters</button>
     </form>
     <div class="result">
         <div class="cards">
-    <ul>
-            @foreach (CardDTO card in _cards)
-            {
-                <li @onclick="() => AddCard(Int32.Parse(card.Id))">
-                    @if (string.IsNullOrEmpty(card.ImageUrl))
-                    {
-                        <img src="/Magic_card_back.jpg" alt="Card Image" />
-                    }
-                    else
-                    {
-                        <img src="@card.ImageUrl" alt="@card.Name"/>
-                    })
-                </li>
-            }
-    </ul>
+            <ul>
+                @foreach (CardDTO card in _cards)
+                {
+                    <li class="card-hover" @onmouseover="() => ShowCardDetails(Int32.Parse(card.Id))" @onclick="() => AddCard(Int32.Parse(card.Id))">
+                        @if (string.IsNullOrEmpty(card.ImageUrl))
+                        {
+                            <img src="/Magic_card_back.jpg" alt="Card Image" />
+                        }
+                        else
+                        {
+                            <img src="@card.ImageUrl" alt="@card.Name" />
+                        }
+                        <div class="card-details">
+                            @if (currentHoveredCardId == Int32.Parse(card.Id) && _card != null)
+                            {
+                                <div>Name: @_card.Name</div>
+                                <div>Type: @_card.Type</div>
+                                <div>Rarity: @_card.RarityCode</div>
+                                <div>Text: @_card.Text</div>
+                                <div>Flavor: @_card.Flavor</div>
+                                <div>Power: @_card.Power</div>
+                                <div>Toughness: @_card.Toughness</div>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
         </div>
         <div class="deck">
             <h2>Deck</h2>
-            <h3>Click cards to add to </h3>
+            <h3>Click cards to add to</h3>
             <ul>
                 @if (_deckCards is not null)
                 {
                     @foreach (DeckCardDTO card in _deckCards)
                     {
                         <li>
-                            @card.Quantity x @card.DeckCardId
+                            <p>
+                                <strong @onclick="() => DeleteCard(card.DeckCardId)">-</strong> 
+                                @card.Quantity x @GetCardName(card.DeckCardId)
+                                <strong @onclick="() => AddCard(card.DeckCardId)">+</strong>
+                            </p>
                         </li>
                     }
                 }
             </ul>
+            <div class="error">@_message</div>
         </div>
-        </div>
+    </div>
 </main>
-
-@code{
-    private Index model = new Index();
-
-    private string message = "Hello";
-
-    public class Index
-    {
-        public string Rarity { get; set; }
-        public string Type { get; set; }
-    }
-
-    public void Testing()
-    {
-        message = "Button clicked";
-        StateHasChanged();
-    }
-}
