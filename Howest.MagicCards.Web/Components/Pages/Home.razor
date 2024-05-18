@@ -88,6 +88,11 @@
                     </li>
                 }
             </ul>
+            <div class="pagination">
+                <button @onclick="PreviousPage" disabled="@(_pageNumber == 1)" class="btn btn-info">Previous</button>
+                <span>Page @_pageNumber of @_totalPages</span>
+                <button @onclick="NextPage" disabled="@(_pageNumber == _totalPages)" class="btn btn-info">Next</button>
+            </div>
         </div>
         <div class="deck">
             <h2>Deck</h2>

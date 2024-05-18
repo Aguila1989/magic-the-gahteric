@@ -19,7 +19,9 @@ namespace Howest.MagicCards.Web.Components.Pages
         private CardDetailDTO _card = new CardDetailDTO();
         private int currentHoveredCardId;
         private List<(DeckCardDTO DeckCard, string CardName)> _deckCardsWithNames = new List<(DeckCardDTO DeckCard, string CardName)>();
-
+        private int _pageNumber = 1;
+        private int _pageSize = 150;
+        private int _totalPages = 1;
 
         [Inject]
         public IHttpClientFactory HttpClientFactory { get; set; }
@@ -43,7 +45,7 @@ namespace Howest.MagicCards.Web.Components.Pages
             _httpClient = HttpClientFactory.CreateClient("WebAPI");
             _httpMinimalClient = HttpClientFactory.CreateClient("MinimalAPI");
             _rarities = await GetResponse<RarityDTO>("rarities");
-            _cards = await GetPagedResponse<CardDTO>("Cards");
+            _cards = await GetPagedResponse<CardDTO>($"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}" );
             _types = await GetResponse<TypeDTO>("types");
             _deckCards = await GetCardsDeck();
             await LoadDeckCardsWithNamesAsync();
@@ -57,6 +59,7 @@ namespace Howest.MagicCards.Web.Components.Pages
             if (response.IsSuccessStatusCode)
             {
                 PagedResponse<IEnumerable<T>> result = JsonSerializer.Deserialize<PagedResponse<IEnumerable<T>>>(apiResponse, _jsonOptions);
+                _totalPages = result.TotalPages;
                 return result.Data;
             }
             else
@@ -198,6 +201,24 @@ namespace Howest.MagicCards.Web.Components.Pages
             else
             {
                 _message = "Error decreasing card quantity!";
+            }
+        }
+
+        public async Task PreviousPage()
+        {
+            if (_pageNumber > 1)
+            {
+                _pageNumber--;
+                _cards = await GetPagedResponse<CardDTO>($"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}");
+            }
+        }
+
+        public async Task NextPage()
+        {
+            if (_pageNumber < _totalPages)
+            {
+                _pageNumber++;
+               _cards = await GetPagedResponse<CardDTO>($"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}");
             }
         }
 
