@@ -15,6 +15,7 @@ namespace Howest.MagicCards.Web.Components.Pages
         private IEnumerable<CardDTO> _cards = new List<CardDTO>();
         private IEnumerable<RarityDTO> _rarities = new List<RarityDTO>();
         private IEnumerable<TypeDTO> _types = new List<TypeDTO>();
+        private IEnumerable<ArtistDTO> _artists = new List<ArtistDTO>();
         private IEnumerable<DeckCardDTO> _deckCards = new List<DeckCardDTO>();
         private CardDetailDTO _card = new CardDetailDTO();
         private int currentHoveredCardId;
@@ -22,6 +23,19 @@ namespace Howest.MagicCards.Web.Components.Pages
         private int _pageNumber = 1;
         private int _pageSize = 150;
         private int _totalPages = 1;
+
+        [Parameter]
+        public string Rarity { get; set; }
+        [Parameter]
+        public string Type { get; set; }
+        [Parameter]
+        public int Artist { get; set; }
+        [Parameter]
+        public string Name { get; set; }
+        [Parameter]
+        public string Text { get; set; }
+        [Parameter]
+        public string SetCode { get; set; }
 
         [Inject]
         public IHttpClientFactory HttpClientFactory { get; set; }
@@ -45,27 +59,38 @@ namespace Howest.MagicCards.Web.Components.Pages
             _httpClient = HttpClientFactory.CreateClient("WebAPI");
             _httpMinimalClient = HttpClientFactory.CreateClient("MinimalAPI");
             _rarities = await GetResponse<RarityDTO>("rarities");
-            _cards = await GetPagedResponse<CardDTO>($"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}" );
+            _artists = await GetResponse<ArtistDTO>("artists");
             _types = await GetResponse<TypeDTO>("types");
             _deckCards = await GetCardsDeck();
+            await GetPagedResponse();
             await LoadDeckCardsWithNamesAsync();
         }
 
-        protected async Task<IEnumerable<T>> GetPagedResponse<T>(string call)
+        protected async Task GetPagedResponse()
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(call);
+            string apiUrl = $"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}";
+            if (!string.IsNullOrEmpty(Name))
+            {
+                apiUrl += $"&Name={Name}";
+            }
+            if (Artist != 0)
+            {
+                apiUrl += $"&Artist={Artist}";
+            }
+            HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
             string apiResponse = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                PagedResponse<IEnumerable<T>> result = JsonSerializer.Deserialize<PagedResponse<IEnumerable<T>>>(apiResponse, _jsonOptions);
-                _totalPages = result.TotalPages;
-                return result.Data;
+                PagedResponse<IEnumerable<CardDTO>> cards =
+                    JsonSerializer.Deserialize<PagedResponse<IEnumerable<CardDTO>>>(apiResponse, _jsonOptions);
+                _cards = cards?.Data;
+                _totalPages = cards.TotalPages;
             }
             else
             {
-                string errorMessage = $"Error: {response.ReasonPhrase}";
-                return new List<T>();
+                _cards = new List<CardDTO>();
+                _message = $"Error: {response.ReasonPhrase}";
             }
         }
 
@@ -209,7 +234,7 @@ namespace Howest.MagicCards.Web.Components.Pages
             if (_pageNumber > 1)
             {
                 _pageNumber--;
-                _cards = await GetPagedResponse<CardDTO>($"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}");
+                await GetPagedResponse();
             }
         }
 
@@ -218,14 +243,9 @@ namespace Howest.MagicCards.Web.Components.Pages
             if (_pageNumber < _totalPages)
             {
                 _pageNumber++;
-               _cards = await GetPagedResponse<CardDTO>($"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}");
+               await GetPagedResponse();
             }
         }
-
-        public class Index
-        {
-            public string Rarity { get; set; }
-            public string Type { get; set; }
-        }
+        
     }
 }

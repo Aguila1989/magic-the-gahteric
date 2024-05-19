@@ -14,25 +14,34 @@
         <fieldset>
             <div>
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" placeholder="Enter Name" />
+                <input type="text" id="name" name="name" placeholder="Enter Name" @bind="@Name"/>
             </div>
             <div>
                 <label for="artist">Artist:</label>
-                <input type="text" id="artist" name="artist" placeholder="Enter Artist" />
+                <InputSelect id="artist" @bind-Value="@Artist">
+                    <option value=0>All Artists</option>
+                    @if (_artists is not null)
+                    {
+                        @foreach (ArtistDTO artist in _artists)
+                        {
+                            <option value="@artist.Id">@artist.FullName</option>
+                        }
+                    }
+                </InputSelect>
             </div>
             <div>
                 <label for="text">Text:</label>
-                <input type="text" id="text" name="text" placeholder="Enter (part of) text" />
+                <input type="text" id="text" name="text" placeholder="Enter (part of) text" @bind="@Text" />
             </div>
         </fieldset>
         <fieldset>
             <div>
                 <label for="set-code">Set Code:</label>
-                <input type="text" id="set-code" name="set-code" placeholder="Enter Set Code" />
+                <input type="text" id="set-code" name="set-code" placeholder="Enter Set Code" @bind="@SetCode" />
             </div>
             <div>
                 <label for="rarity">Rarity:</label>
-                <InputSelect id="rarity" @bind-Value="@model.Rarity">
+                <InputSelect id="rarity" @bind-Value="@Rarity">
                     <option value="">All Rarities</option>
                     @if (_rarities is not null)
                     {
@@ -45,7 +54,7 @@
             </div>
             <div>
                 <label for="card-type">Card Type:</label>
-                <InputSelect id="card-type" @bind-Value="@model.Type">
+                <InputSelect id="card-type" @bind-Value="@Type">
                     <option value="">All Types</option>
                     @if (_types is not null)
                     {
@@ -57,7 +66,7 @@
                 </InputSelect>
             </div>
         </fieldset>
-        <button>Apply Filters</button>
+        <input type="submit" value="Apply Filters" />
     </form>
     <div class="result">
         <div class="cards">
