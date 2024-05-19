@@ -1,5 +1,6 @@
 ﻿using Amazon.SecurityToken.Model;
 using Howest.MagicCards.Shared.DTO;
+using Howest.MagicCards.Shared.Filters;
 using Microsoft.AspNetCore.Components;
 using System.Text.Json;
 using WebAPI.Wrappers;
@@ -18,22 +19,10 @@ namespace Howest.MagicCards.Web.Components.Pages
         private CardDetailDTO _card = new CardDetailDTO();
         private int currentHoveredCardId;
         private List<(DeckCardDTO DeckCard, string CardName)> _deckCardsWithNames = new List<(DeckCardDTO DeckCard, string CardName)>();
+        CardFilterWithSorting filter = new CardFilterWithSorting();
         private int _pageNumber = 1;
         private int _pageSize = 150;
         private int _totalPages = 1;
-
-        [Parameter]
-        public string Rarity { get; set; }
-        [Parameter]
-        public string Type { get; set; }
-        [Parameter]
-        public int Artist { get; set; }
-        [Parameter]
-        public string Name { get; set; }
-        [Parameter]
-        public string Text { get; set; }
-        [Parameter]
-        public string SetCode { get; set; }
 
         [Inject]
         public IHttpClientFactory HttpClientFactory { get; set; }
@@ -67,29 +56,29 @@ namespace Howest.MagicCards.Web.Components.Pages
         protected async Task GetPagedResponse()
         {
             string apiUrl = $"Cards?PageNumber={_pageNumber}&PageSize={_pageSize}";
-            if (!string.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(filter.Name))
             {
-                apiUrl += $"&Name={Name}";
+                apiUrl += $"&Name={filter.Name}";
             }
-            if (Artist != 0)
+            if (filter.ArtistId != 0)
             {
-                apiUrl += $"&Artist={Artist}";
+                apiUrl += $"&ArtistId={filter.ArtistId}";
             }
-            if (!string.IsNullOrEmpty(Text))
+            if (!string.IsNullOrEmpty(filter.Text))
             {
-                apiUrl += $"&Text={Text}";
+                apiUrl += $"&Text={filter.Text}";
             }
-            if (!string.IsNullOrEmpty(SetCode))
+            if (!string.IsNullOrEmpty(filter.SetCode))
             {
-                apiUrl += $"&SetCode={SetCode}";
+                apiUrl += $"&SetCode={filter.SetCode}";
             }
-            if (!string.IsNullOrEmpty(Type))
+            if (!string.IsNullOrEmpty(filter.Type))
             {
-                apiUrl += $"&Type={Type}";
+                apiUrl += $"&Type={filter.Type}";
             }
-            if (!string.IsNullOrEmpty(Rarity))
+            if (!string.IsNullOrEmpty(filter.RarityCode))
             {
-                apiUrl += $"&RarityCode={Rarity}";
+                apiUrl += $"&RarityCode={filter.RarityCode}";
             }
             HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -254,6 +243,12 @@ namespace Howest.MagicCards.Web.Components.Pages
                 _pageNumber++;
                await GetPagedResponse();
             }
+        }
+
+        public async Task Filter()
+        {
+            _pageNumber = 1;
+            await GetPagedResponse();
         }
         
     }

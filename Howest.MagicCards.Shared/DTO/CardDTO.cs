@@ -7,5 +7,6 @@
         public string Type { get; init; }
         public string RarityCode { get; init; }
         public string ImageUrl { get; init; }
+        public long ArtistId { get; init; }
     }
 }

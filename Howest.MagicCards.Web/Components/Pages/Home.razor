@@ -10,15 +10,15 @@
 </header>
 <main>
     <h2>Cards</h2>
-    <form>
+    <EditForm OnSubmit="@Filter" Model="@filter">
         <fieldset>
             <div>
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" placeholder="Enter Name" @bind="@Name"/>
+                <input type="text" id="name" name="name" placeholder="Enter Name" @bind="@filter.Name"/>
             </div>
             <div>
                 <label for="artist">Artist:</label>
-                <InputSelect id="artist" @bind-Value="@Artist">
+                <InputSelect id="artist" @bind-Value="@filter.ArtistId">
                     <option value=0>All Artists</option>
                     @if (_artists is not null)
                     {
@@ -31,30 +31,30 @@
             </div>
             <div>
                 <label for="text">Text:</label>
-                <input type="text" id="text" name="text" placeholder="Enter (part of) text" @bind="@Text" />
+                <input type="text" id="text" name="text" placeholder="Enter (part of) text" @bind="@filter.Text" />
             </div>
         </fieldset>
         <fieldset>
             <div>
                 <label for="set-code">Set Code:</label>
-                <input type="text" id="set-code" name="set-code" placeholder="Enter Set Code" @bind="@SetCode" />
+                <input type="text" id="set-code" name="set-code" placeholder="Enter Set Code" @bind="@filter.SetCode" />
             </div>
             <div>
                 <label for="rarity">Rarity:</label>
-                <InputSelect id="rarity" @bind-Value="@Rarity">
+                <InputSelect id="rarity" @bind-Value="@filter.RarityCode">
                     <option value="">All Rarities</option>
                     @if (_rarities is not null)
                     {
                         @foreach (RarityDTO rarity in _rarities)
                         {
-                            <option value="@rarity.Name">@rarity.Name</option>
+                            <option value="@rarity.Code">@rarity.Name</option>
                         }
                     }
                 </InputSelect>
             </div>
             <div>
                 <label for="card-type">Card Type:</label>
-                <InputSelect id="card-type" @bind-Value="@Type">
+                <InputSelect id="card-type" @bind-Value="@filter.Type">
                     <option value="">All Types</option>
                     @if (_types is not null)
                     {
@@ -67,7 +67,7 @@
             </div>
         </fieldset>
         <input type="submit" value="Apply Filters" />
-    </form>
+    </EditForm>
     <div class="result">
         <div class="cards">
             <ul>
