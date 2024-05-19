@@ -1,8 +1,6 @@
 ﻿using Amazon.SecurityToken.Model;
 using Howest.MagicCards.Shared.DTO;
 using Microsoft.AspNetCore.Components;
-using System.ComponentModel;
-using System.Globalization;
 using System.Text.Json;
 using WebAPI.Wrappers;
 
@@ -77,6 +75,22 @@ namespace Howest.MagicCards.Web.Components.Pages
             {
                 apiUrl += $"&Artist={Artist}";
             }
+            if (!string.IsNullOrEmpty(Text))
+            {
+                apiUrl += $"&Text={Text}";
+            }
+            if (!string.IsNullOrEmpty(SetCode))
+            {
+                apiUrl += $"&SetCode={SetCode}";
+            }
+            if (!string.IsNullOrEmpty(Type))
+            {
+                apiUrl += $"&Type={Type}";
+            }
+            if (!string.IsNullOrEmpty(Rarity))
+            {
+                apiUrl += $"&RarityCode={Rarity}";
+            }
             HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
             string apiResponse = await response.Content.ReadAsStringAsync();
 
@@ -94,7 +108,7 @@ namespace Howest.MagicCards.Web.Components.Pages
             }
         }
 
-        protected async Task UpdateCardDetail(int cardID)
+        protected async Task ShowCardDetails(int cardID)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"cards/{cardID}");
 
@@ -178,11 +192,6 @@ namespace Howest.MagicCards.Web.Components.Pages
                 string errorMessage = $"Error: {response.ReasonPhrase}";
                 throw new HttpRequestException(errorMessage);
             }
-        }
-
-        private async Task ShowCardDetails(int cardID)
-        {
-            await UpdateCardDetail(cardID);
         }
 
         private async Task LoadDeckCardsWithNamesAsync()
