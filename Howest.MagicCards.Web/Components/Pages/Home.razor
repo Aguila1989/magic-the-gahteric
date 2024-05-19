@@ -66,6 +66,13 @@
                 </InputSelect>
             </div>
         </fieldset>
+        <div>
+            <label for="sort-order">Sort Order:</label>
+            <InputSelect id="sort-order" @bind-Value="@filter.SortAsc">
+                <option value="true">Ascending</option>
+                <option value="false">Descending</option>
+            </InputSelect>
+        </div>
         <input type="submit" value="Apply Filters" />
     </EditForm>
     <div class="result">

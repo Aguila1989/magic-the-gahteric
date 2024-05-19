@@ -80,6 +80,7 @@ namespace Howest.MagicCards.Web.Components.Pages
             {
                 apiUrl += $"&RarityCode={filter.RarityCode}";
             }
+            apiUrl += $"&SortAsc={filter.SortAsc}";
             HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
             string apiResponse = await response.Content.ReadAsStringAsync();
 

@@ -95,10 +95,10 @@ namespace WebAPI.Controllers.V1_1
             }
 
             [HttpGet]
-            public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilter filter)
+            public async Task<ActionResult<PagedResponse<IEnumerable<CardDTO>>>> GetCards([FromQuery] CardFilterWithSorting filter)
             {
 
-                string cacheKey = $"Cards_{filter.PageNumber}{filter.PageSize}{filter.SetCode}{filter.Type}{filter.Name}{filter.Text}{filter.ArtistId}_{filter.RarityCode}";
+                string cacheKey = $"Cards_{filter.PageNumber}{filter.PageSize}{filter.SetCode}{filter.Type}{filter.Name}{filter.Text}{filter.ArtistId}{filter.RarityCode}{filter.SortAsc}";
 
                 PagedResponse<IEnumerable<CardDTO>> cachedResponse = _cache.Get<PagedResponse<IEnumerable<CardDTO>>>(cacheKey);
 
@@ -120,13 +120,13 @@ namespace WebAPI.Controllers.V1_1
                 }
 
                 IEnumerable<CardDTO> searchResult = await cards
-                        .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.ArtistId, filter.RarityCode)
+                        .ToFilteredListv5(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.ArtistId, filter.RarityCode, filter.SortAsc)
                         .ToPagedList(filter.PageNumber, filter.PageSize)
                         .ProjectTo<CardDTO>(_mapper.ConfigurationProvider)
                         .ToListAsync();
 
                 int totalRecords = cards
-                    .ToFilteredList(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.ArtistId, filter.RarityCode)
+                    .ToFilteredListv5(filter.SetCode, filter.Type, filter.Name, filter.Text, filter.ArtistId, filter.RarityCode, filter.SortAsc)
                     .Count();
 
                 int totalPages = (int)Math.Ceiling(totalRecords / (double)filter.PageSize);
